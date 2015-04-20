@@ -67,6 +67,11 @@ $(function() {
                 // used for rotated axis
                 height: 60
             }
+        },
+        grid: {
+          y: {
+            show: true
+          }
         }
     });
 
