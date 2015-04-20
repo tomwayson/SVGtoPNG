@@ -1,5 +1,5 @@
 /* jshint strict: false */
-/* globals $, c3 */
+/* globals $, c3, d3 */
 $(function() {
   $('.savePNG').on('click',function(e){
     e.preventDefault();
@@ -61,7 +61,8 @@ $(function() {
                     // have to rotate so right label is not cut off
                     rotate: 90,
                     multiline: false,
-                    // NOTE: this is the same format used in mouseover
+                    // NOTE: this is the same format used in tooltip
+                    // unless it's overwritten below
                     format: '%m/%d %Hh'
                 },
                 // used for rotated axis
@@ -72,6 +73,18 @@ $(function() {
           y: {
             show: true
           }
+        },
+        tooltip: {
+            format: {
+                // title: function (d) {
+                //     TODO: optionally override date format in tooltip title
+                // },
+                // show thousands comma in outage counts
+                value: function (value/*, ratio, id*/) {
+                    var format = d3.format(',');
+                    return format(value);
+                }
+            }
         }
     });
 
