@@ -5,26 +5,69 @@ $(function() {
     e.preventDefault();
     createChartImages();
   });
-   window.chart = c3.generate({
+    var maxHours = 5 * 24;
+    var avgOutageRange = 4000; // avg diff btw outage max/min
+    var maxOutages = 40000; // state of CA for example
+    var randomScalingFactor = function() {
+      var factor = Math.random() > 0.95 ? maxOutages : avgOutageRange;
+      return Math.round(Math.random() * factor);
+    };
+    var labels = ['x'];
+    var values = ['Outages'];
+    var items = [];
+    for (var i = 0; i < maxHours; i++) {
+      var itemDate = new Date(2015, 2, 3, 15);
+      var item = {
+        datetime: new Date(itemDate.setHours(itemDate.getHours() + i)),
+        outages: randomScalingFactor()
+      };
+      items.push(item);
+      // labels.push(item.datetime.toLocaleDateString() + ' ' + item.datetime.toLocaleTimeString());
+      labels.push(item.datetime.getFullYear() + '-' + (item.datetime.getMonth() + 1) + '-' + item.datetime.getDate() + ' ' + item.datetime.getHours() + ':00');
+      values.push(item.outages);
+    }
+    console.log(labels);
+    console.log(values);
+
+    window.chart = c3.generate({
         data: {
             x: 'x',
+            xFormat: '%Y-%m-%d %H:%M',
             columns: [
-              ['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'],
-              ['data1', 30, 200, 100, 400, 150, 250]
+                labels,
+                values
+              // ['x', '2013-01-01', '2013-01-02', '2013-01-03', '2013-01-04', '2013-01-05', '2013-01-06'],
+              // ['data1', 30, 200, 100, 400, 150, 250]
             ]
         },
         point: {
             show: false
         },
         axis: {
+            // this doesnt' work, why?
+            // x: {
+            //     show: false
+            // }
             x: {
                 type: 'timeseries',
                 tick: {
-                    format: '%Y-%m-%d'
-                }
+                    // values: ['2015-3-3 15:00', '2015-3-8 00:00'],
+                    // count is better than culling and values
+                    count: 3,
+                    // padding does not work
+                    // padding: {
+                    //     right: 86400000 / 4
+                    // },
+                    // have to rotate so right label is not cut off
+                    rotate: 90,
+                    multiline: false,
+                    // NOTE: this is the same format used in mouseover
+                    format: '%m/%d %Hh'
+                },
+                // used for rotated axis
+                height: 60
             }
         }
-
     });
 
    var styles;
